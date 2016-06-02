@@ -1,0 +1,104 @@
+<html><head><link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/effects/waterfall.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/app-layout/helpers/helpers.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="shop-category-data.html">
+
+<link rel="import" href="shop-home.html">
+
+</head><body><dom-module id="shop-app">
+
+  <template>
+
+    <style>:host{display:block;position:relative;padding-top:130px;padding-bottom:64px;min-height:100vh;--app-primary-color:#202020;--app-secondary-color:#757575;--app-accent-color:#172C50;--paper-button-ink-color:var(--app-accent-color);--paper-icon-button-ink-color:var(--app-accent-color);--paper-spinner-color:var(--app-accent-color);-webkit-tap-highlight-color:rgba(0, 0, 0, 0);color:var(--app-primary-color);}app-header{@apply (--layout-fixed-top);z-index:1;background-color:rgba(255, 255, 255, 0.95);--app-header-shadow:{box-shadow:inset 0px 5px 6px -3px rgba(0, 0, 0, 0.2);height:10px;bottom:-10px;};}paper-icon-button{color:var(--app-primary-color);}.logo{text-align:center;}.logo a{font-size:16px;font-weight:600;letter-spacing:0.3em;color:var(--app-primary-color);text-decoration:none;display:inline-block;pointer-events:auto;}.left-bar-item{width:40px;}.menu-btn{display:none;}.cart-btn-container{position:relative;width:40px;}.announcer{position:fixed;height:0;overflow:hidden;}:host(:not([page=detail])) .back-btn{display:none;}[hidden]{display:none !important;}#tabContainer{position:relative;height:66px;}shop-tabs, shop-tab{--shop-tab-overlay:{border-bottom:2px solid var(--app-accent-color);};}shop-tabs{height:100%;}shop-tab{margin:0 10px;}shop-tab a{display:inline-block;outline:none;padding:9px 5px;font-size:13px;font-weight:500;text-decoration:none;color:var(--app-primary-color);}.cart-badge{position:absolute;top:-2px;right:0;width:20px;height:20px;background-color:var(--app-accent-color);border-radius:50%;color:white;font-size:12px;font-weight:500;pointer-events:none;@apply (--layout-vertical);@apply (--layout-center-center);}.drawer-list{margin:0 20px;}.drawer-list a{display:block;padding:0 16px;line-height:40px;text-decoration:none;color:var(--app-secondary-color);}.drawer-list a.iron-selected{color:black;font-weight:bold;}shop-cart-modal{z-index:2;}app-drawer{z-index:3;}iron-pages{max-width:1440px;margin:0 auto;}footer{position:absolute;bottom:0;left:0;right:0;text-align:center;margin:20px;line-height:24px;}footer > a{color:var(--app-secondary-color);text-decoration:none;}footer > a:hover{text-decoration:underline;}@media (max-width: 767px){:host{padding-top:64px;}.menu-btn{display:block;}:host([page=detail]) .menu-btn{display:none;}}</style>
+
+    <shop-analytics key="UA-39334307-16"></shop-analytics>
+    
+    <app-location route="{{route}}"></app-location>
+    <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
+
+    <iron-media-query query="max-width: 767px" query-matches="{{smallScreen}}"></iron-media-query>
+
+    
+    <shop-category-data categories="{{categories}}"></shop-category-data>
+
+    
+    <shop-cart-data id="cart" cart="{{cart}}" num-items="{{numItems}}" total="{{total}}"></shop-cart-data>
+
+    <app-header role="navigation" id="header" effects="waterfall" condenses="" reveals="">
+      <app-toolbar>
+        <div class="left-bar-item">
+          <paper-icon-button class="menu-btn" icon="menu" on-tap="_toggleDrawer" aria-label="Categories">
+          </paper-icon-button>
+          <a class="back-btn" href="/list/[[categoryName]]" tabindex="-1">
+            <paper-icon-button icon="arrow-back" aria-label="Go back"></paper-icon-button>
+          </a>
+        </div>
+        <div class="logo" title=""><a href="/" aria-label="SHOP Home">SHOP</a></div>
+        <div class="cart-btn-container">
+          <a href="/cart" tabindex="-1">
+            <paper-icon-button icon="shopping-cart" aria-label$="Shopping cart: [[_computePluralizedQuantity(numItems)]]"></paper-icon-button>
+          </a>
+          <div class="cart-badge" aria-hidden="true" hidden$="[[!numItems]]">[[numItems]]</div>
+        </div>
+      </app-toolbar>
+
+      
+      <div id="tabContainer" primary$="[[_shouldShowTabs]]" hidden$="[[!_shouldShowTabs]]">
+        <template is="dom-if" if="[[_shouldRenderTabs]]">
+          <shop-tabs selected="[[categoryName]]" attr-for-selected="name">
+            <template is="dom-repeat" items="[[categories]]" as="category" initial-count="4">
+              <shop-tab name="[[category.name]]">
+                <a href="/list/[[category.name]]">[[category.title]]</a>
+              </shop-tab>
+            </template>
+          </shop-tabs>
+        </template>
+      </div>
+    </app-header>
+
+    
+    <template is="dom-if" if="[[_shouldRenderDrawer]]">
+      
+      <app-drawer opened="{{drawerOpened}}" swipe-open="" tabindex="0">
+        <iron-selector role="navigation" class="drawer-list" selected="[[categoryName]]" attr-for-selected="name">
+          <template is="dom-repeat" items="[[categories]]" as="category" initial-count="4">
+            <a name="[[category.name]]" href="/list/[[category.name]]">[[category.title]]</a>
+          </template>
+        </iron-selector>
+      </app-drawer>
+    </template>
+
+    <iron-pages role="main" selected="[[page]]" attr-for-selected="name" selected-attribute="visible">
+      
+      <shop-home name="home" categories="[[categories]]"></shop-home>
+      
+      <shop-list name="list" route="[[subroute]]" offline="[[offline]]"></shop-list>
+      
+      <shop-detail name="detail" route="[[subroute]]" offline="[[offline]]"></shop-detail>
+      
+      <shop-cart name="cart" cart="[[cart]]" total="[[total]]"></shop-cart>
+      
+      <shop-checkout name="checkout" cart="[[cart]]" total="[[total]]" route="{{subroute}}"></shop-checkout>
+    </iron-pages>
+
+    <footer>
+      <a href="https://www.polymer-project.org/1.0/toolbox/">Made by Polymer</a>
+    </footer>
+
+    
+    <div class="announcer" aria-live="assertive">[[_a11yLabel]]</div>
+
+  </template>
+
+  <script>window.performance&&performance.mark&&performance.mark("shop-app - before register"),Polymer({is:"shop-app",properties:{page:{type:String,reflectToAttribute:!0,observer:"_pageChanged"},numItems:{type:Number,value:0},_shouldShowTabs:{computed:"_computeShouldShowTabs(page, smallScreen)"},_shouldRenderTabs:{computed:"_computeShouldRenderTabs(_shouldShowTabs, loadComplete)"},_shouldRenderDrawer:{computed:"_computeShouldRenderDrawer(smallScreen, loadComplete)"}},observers:["_routePageChanged(routeData.page)"],listeners:{"add-cart-item":"_onAddCartItem","set-cart-item":"_onSetCartItem","clear-cart":"_onClearCart","change-section":"_onChangeSection",announce:"_onAnnounce","dom-change":"_domChange"},created:function(){window.performance&&performance.mark&&performance.mark("shop-app.created"),this.removeAttribute("unresolved")},ready:function(){Polymer.RenderStatus.afterNextRender(this,function(){this.listen(window,"online","_notifyNetworkStatus"),this.listen(window,"offline","_notifyNetworkStatus")})},_routePageChanged:function(e){this.page=e||"home",Polymer.AppLayout.scroll({top:0,behavior:"silent"}),this.drawerOpened=!1},_pageChanged:function(e,t){null!=e&&("home"==e?this._pageLoaded(Boolean(t)):this.importHref(this.resolveUrl("shop-"+e+".html"),function(){this._pageLoaded(Boolean(t))},null,!0))},_pageLoaded:function(e){this._ensureLazyLoaded(),e&&this.async(function(){this.$.header.resetLayout()},1)},_ensureLazyLoaded:function(){this.loadComplete||Polymer.RenderStatus.afterNextRender(this,function(){this.importHref(this.resolveUrl("lazy-resources.html"),function(){"serviceWorker"in navigator&&navigator.serviceWorker.register("/service-worker.js"),this._notifyNetworkStatus(),this.loadComplete=!0})})},_notifyNetworkStatus:function(){var e=this.offline;this.offline=!navigator.onLine,(this.offline||!this.offline&&e===!0)&&(this._networkSnackbar||(this._networkSnackbar=document.createElement("shop-snackbar"),Polymer.dom(this.root).appendChild(this._networkSnackbar)),Polymer.dom(this._networkSnackbar).innerHTML=this.offline?"You are offline":"You are online",this._networkSnackbar.open())},_toggleDrawer:function(){this.drawerOpened=!this.drawerOpened},_onChangeSection:function(e){var t=e.detail;this.categoryName=t.category||"",t.title&&(document.title=t.title+" - SHOP",this._announce(t.title+", loaded"))},_onAddCartItem:function(e){this._cartModal||(this._cartModal=document.createElement("shop-cart-modal"),Polymer.dom(this.root).appendChild(this._cartModal)),this.$.cart.addItem(e.detail),this._cartModal.open(),this._announce("Item added to the cart")},_onSetCartItem:function(e){var t=e.detail;this.$.cart.setItem(t),0===t.quantity?this._announce("Item deleted"):this._announce("Quantity changed to "+t.quantity)},_onClearCart:function(){this.$.cart.clearCart(),this._announce("Cart cleared")},_onAnnounce:function(e){this._announce(e.detail)},_announce:function(e){this._a11yLabel="",this.debounce("_a11yAnnouncer",function(){this._a11yLabel=e},100)},_domChange:function(e){if(window.performance&&performance.mark&&!this.__loggedDomChange){var t=Polymer.dom(e).rootTarget;t.domHost.is.match(this.page)&&(this.__loggedDomChange=!0,performance.mark(t.domHost.is+".domChange"))}},_computeShouldShowTabs:function(e,t){return("home"===e||"list"===e||"detail"===e)&&!t},_computeShouldRenderTabs:function(e,t){return e&&t},_computeShouldRenderDrawer:function(e,t){return e&&t},_computePluralizedQuantity:function(e){return e+" "+(1===e?"item":"items")}});</script>
+
+</dom-module>
+</body></html>

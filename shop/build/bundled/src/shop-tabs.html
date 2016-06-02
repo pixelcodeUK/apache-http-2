@@ -1,0 +1,16 @@
+<html><head><link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selectable.html">
+<link rel="import" href="shop-tabs-overlay.html">
+
+</head><body><dom-module id="shop-tabs">
+  <template strip-whitespace="">
+    <style>:host{@apply (--layout);@apply (--layout-center-center);}#container{position:relative;}shop-tabs-overlay{@apply (--shop-tab-overlay);}</style>
+    <div id="container">
+      <shop-tabs-overlay id="overlay"></shop-tabs-overlay>
+      <content></content>
+    </div>
+  </template>
+  <script>Polymer({is:"shop-tabs",behaviors:[Polymer.IronSelectableBehavior],observers:["_onSelectedItemChanged(selectedItem)"],_onSelectedItemChanged:function(e){void 0===e&&this.selected||(this.$.overlay.target=e)}});</script>
+</dom-module>
+</body></html>

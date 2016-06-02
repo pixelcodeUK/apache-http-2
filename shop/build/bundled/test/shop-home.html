@@ -1,0 +1,24 @@
+<!DOCTYPE html><html><head>
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1,user-scalable=yes">
+  <title>shop-home</title>
+
+  <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../bower_components/web-component-tester/browser.js"></script>
+
+  
+  <link rel="import" href="../src/shop-home.html">
+
+</head>
+<body>
+
+  <test-fixture id="basic">
+    <template>
+       <shop-home></shop-home>
+    </template>
+  </test-fixture>
+
+  <script>suite("shop-home tests",function(){var e;setup(function(){e=fixture("basic")}),test("Item lengths should be equalled",function(t){e.categories=[{name:"furniture",title:"Furniture"},{name:"food",title:"Food"},{name:"fashion",title:"Fashion"}],flush(function(){var o=Polymer.dom(e.root).querySelectorAll(".item");assert.equal(e.categories.length,o.length),t()})})});</script>
+
+
+
+</body></html>

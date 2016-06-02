@@ -1,0 +1,44 @@
+<html><head><link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="shop-category-data.html">
+<link rel="import" href="shop-common-styles.html">
+<link rel="import" href="shop-image.html">
+<link rel="import" href="shop-list-item.html">
+
+</head><body><dom-module id="shop-list">
+
+  <template>
+
+    <style include="shop-common-styles">.hero-image{position:relative;height:320px;overflow:hidden;margin-bottom:32px;}.hero-image{--shop-image-img:{position:absolute;top:0;bottom:0;left:-9999px;right:-9999px;max-width:none;};}.grid{@apply (--layout-horizontal);@apply (--layout-wrap);@apply (--layout-justified);margin:0 10px 32px 10px;padding:0;list-style:none;}.grid li{-webkit-flex:1 1;flex:1 1;-webkit-flex-basis:33%;flex-basis:33%;max-width:33%;}.grid a{display:block;text-decoration:none;}@media (max-width: 767px){.hero-image{display:none;}.grid  li{-webkit-flex-basis:50%;flex-basis:50%;max-width:50%;}}</style>
+
+    
+    <app-route route="[[route]]" pattern="/:category" data="{{routeData}}"></app-route>
+
+    
+    <shop-category-data id="categoryData" category-name="[[routeData.category]]" category="{{category}}" failure="{{failure}}"></shop-category-data>
+
+    <shop-image alt="[[category.title]]" src="[[category.image]]" placeholder-img="[[category.placeholder]]" class="hero-image"></shop-image>
+
+    <header>
+      <h1>[[category.title]]</h1>
+      <span>[[_getPluralizedQuantity(category.items.length)]]</span>
+    </header>
+
+    <ul class="grid" hidden$="[[failure]]">
+      <template is="dom-repeat" items="[[_getListItems(category.items)]]" initial-count="4">
+        <li>
+          <a href$="[[_getItemHref(item)]]"><shop-list-item item="[[item]]"></shop-list-item></a>
+        </li>
+      </template>
+    </ul>
+    
+    
+    <shop-network-warning hidden$="[[!failure]]" offline="[[offline]]" on-try-reconnect="_tryReconnect"></shop-network-warning>
+
+  </template>
+
+  <script>Polymer({is:"shop-list",properties:{category:Object,route:Object,routeData:Object,visible:Boolean,offline:{type:Boolean,observer:"_offlineChanged"},failure:Boolean},observers:["_categoryChanged(category, visible)"],_getListItems:function(e){return e||[{},{},{},{},{},{},{},{},{},{}]},_getItemHref:function(e){return e.name?["/detail",this.category.name,e.name].join("/"):null},_getPluralizedQuantity:function(e){if(!e)return"";var t=1===e?"item":"items";return"("+e+" "+t+")"},_categoryChanged:function(e,t){t&&this.debounce("change-section",function(){this.fire("change-section",{category:e.name,title:e.title})})},_tryReconnect:function(){this.$.categoryData.refresh()},_offlineChanged:function(e){e||this._tryReconnect()}});</script>
+
+</dom-module>
+</body></html>

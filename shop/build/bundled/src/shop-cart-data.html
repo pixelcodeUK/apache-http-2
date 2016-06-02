@@ -1,0 +1,13 @@
+<html><head><link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
+
+</head><body><dom-module id="shop-cart-data">
+
+  <template>
+    <iron-localstorage name="shop-cart-data" value="{{cart}}" on-iron-localstorage-load-empty="_initializeCart"></iron-localstorage>
+  </template>
+
+  <script>Polymer({is:"shop-cart-data",properties:{cart:{type:Array,notify:!0},numItems:{type:Number,computed:"_computeNumItems(cart.splices)",notify:!0},total:{type:Number,computed:"_computeTotal(cart.splices)",notify:!0}},addItem:function(t){var i=this._indexOfEntry(t.item.name,t.size);-1!==i&&(t.quantity+=this.cart[i].quantity),this.setItem(t)},setItem:function(t){var i=this._indexOfEntry(t.item.name,t.size);0===t.quantity?-1!==i&&this.splice("cart",i,1):-1!==i?this.splice("cart",i,1,t):this.push("cart",t)},clearCart:function(){this.cart=[]},_computeNumItems:function(){return this.cart?this.cart.reduce(function(t,i){return t+i.quantity},0):0},_computeTotal:function(){return this.cart?this.cart.reduce(function(t,i){return t+i.quantity*i.item.price},0):0},_indexOfEntry:function(t,i){if(this.cart)for(var e=0;e<this.cart.length;++e){var r=this.cart[e];if(r.item.name===t&&r.size===i)return e}return-1},_initializeCart:function(){this.clearCart()}});</script>
+
+</dom-module>
+</body></html>
